@@ -1,0 +1,26 @@
+/* drogon config. copied the example from the docs and deleted things until
+   it stopped working, then put the last thing back */
+{
+    "listeners": [
+        {
+            // 127.0.0.1 ONLY. it used to say 0.0.0.0 and my roommate found it
+            "address": "127.0.0.1",
+            "port": 8080,
+            "https": false
+        }
+    ],
+    "app": {
+        // it's one page. it gets one thread
+        "number_of_threads": 1,
+        "enable_session": false
+    },
+    // for when hello world needs a database
+    // "db_clients": [{ "rdbms": "postgresql", "host": "prod-db-final-2", "user": "admin", "passwd": "hunter2" }],
+    "custom_config": {
+        // how many pixels away from a corner still counts as "the corner"
+        "corner_slop": 6,
+        "blockchain": false,
+        // TODO move this somewhere safe (it is not real. there is no safe)
+        "master_api_key": "key-0000-this-0000-is-0000-fake"
+    }
+}
