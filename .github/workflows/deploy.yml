@@ -1,0 +1,59 @@
+name: deploy
+
+# copied most of this from the github docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # ubuntu just has drogon in apt. I spent two days building it from source before I found this out.
+      # also yes, cmake refuses to configure a hello world unless postgres, mysql, sqlite AND redis
+      # are installed. I don't use any of them. I took them out one at a time to check
+      - name: install drogon
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdrogon-dev cmake g++ make curl \
+            libjsoncpp-dev uuid-dev zlib1g-dev libssl-dev libbrotli-dev libyaml-cpp-dev \
+            libpq-dev libsqlite3-dev libmariadb-dev libhiredis-dev
+
+      - name: build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+
+      - name: run the server and steal its html
+        run: |
+          chmod +x export.sh
+          ./export.sh
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
