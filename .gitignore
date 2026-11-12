@@ -1,0 +1,11 @@
+build/
+build2/
+site/
+uploads/
+.env
+.DS_Store
+a.out
+*.o
+.vscode/
+main_backup.cc
+main_backup_REAL.cc
